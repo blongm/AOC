@@ -41,7 +41,7 @@ auto chg_dir(bool* end, dir* g_dir, size_t* x, size_t* y)
             break;
 
         case LEFT:
-            if (*y == 0) *end = true;
+            if (*x == 0) *end = true;
             else if (map.at(*y).at(*x-1) == '#') *g_dir = UP;
             else (*x)--;
             break;
@@ -55,6 +55,7 @@ auto chg_dir(bool* end, dir* g_dir, size_t* x, size_t* y)
 
 auto loop(int ob_x, int ob_y)
 {
+    cout << "Loop: " << ob_y << " " << ob_x << '\n';
     map.at(ob_y).at(ob_x) = '#';
     auto g_dir = UP; 
     auto end = false;
@@ -65,13 +66,17 @@ auto loop(int ob_x, int ob_y)
     while (not end)
     {
         vis_loc last_vis_loc = {x, y, g_dir};
-        if (find(vis_locs.begin(), vis_locs.end(), last_vis_loc) != vis_locs.end()) return true;
-
+        if (find(vis_locs.begin(), vis_locs.end(), last_vis_loc) != vis_locs.end()) 
+        {
+            map.at(ob_y).at(ob_x) = '.';
+            return true;
+        }
         vis_locs.push_back({x, y, g_dir});
         
         chg_dir(&end, &g_dir, &x, &y);
     }
 
+    map.at(ob_y).at(ob_x) = '.';
     return false;
 }
 
@@ -95,13 +100,13 @@ int main(int argc, char** argv)
     }
 
     auto end = false;
-    auto x = orig_x; auto y = orig_y;
+    auto cur_x = orig_x; auto cur_y = orig_y;
     auto g_dir = UP; 
 
     while (not end)
     {
-        map.at(y).at(x) = 'X';
-        chg_dir(&end, &g_dir, &x, &y);
+        map.at(cur_y).at(cur_x) = 'X';
+        chg_dir(&end, &g_dir, &cur_x, &cur_y);
     }
 
     int cnt = 0;
