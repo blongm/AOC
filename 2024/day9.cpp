@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
+
 #define FREE -1
 
 using namespace std; 
@@ -22,6 +24,33 @@ auto mov_block(vector<int>& disk, size_t i)
     {
         disk.at(i) = disk.back();
         disk.pop_back();
+    }
+}
+
+auto mov_file(vector<int>& disk, size_t file_begin, int& file_end)
+{
+    auto file_size = file_end - file_begin;
+    auto space = vector(file_size, FREE);
+    auto pos = search(disk.begin(), disk.begin() + file_begin + 1, space.begin(), space.end());
+
+    if (pos != disk.begin() + file_begin + 1)
+    {
+        copy_n(disk.begin() + file_begin + 1, file_size, pos);
+        copy_n(space.begin(), file_size, disk.begin() + file_begin + 1);
+    }
+
+    file_end = FREE;
+}
+
+auto chk_block(vector<int>& disk, size_t& i, int& file_end)
+{
+    if (file_end == FREE and disk.at(i) != FREE)
+        file_end = i;
+
+    else if (file_end != FREE and disk.at(i) != disk.at(file_end))
+    {
+        mov_file(disk, i, file_end);
+        i++;
     }
 }
 
@@ -56,17 +85,17 @@ int main(int argc, char** argv)
 
     cout << "Checksum: " << checksum << '\n';   
 
-    for (size_t i = disk.size() - 1; i <= 0; i--)
-    {
-    //  if no end position recorded and not free
-    //      record end position
-    //  if end position recorded and free
-    //      record start position
-    //      calc difference
-    //      if free spot exists for the whole file
-    //          move file over
-    //      reset end and start positions
-    }  
+    auto file_end = FREE;
+
+    for (size_t i = disk2.size(); i --> 0;)
+        chk_block(disk2, i, file_end);
+
+    checksum = 0;
+        
+    for (size_t i = 0; i < disk2.size(); i++)
+        if(disk2.at(i) >= 0) checksum += i * disk2.at(i);
+
+    cout << "Part 2 Checksum: " << checksum << '\n';   
 
     return 0;
 }
