@@ -31,6 +31,7 @@ struct Trail
 
 vector<Loc> Heads;
 vector<Trail> Trails;
+vector<Trail> AllTrails;
 
 auto find_heads(size_t x, size_t y, vector<string> lines, Loc End)
 {
@@ -38,6 +39,8 @@ auto find_heads(size_t x, size_t y, vector<string> lines, Loc End)
     {
         Trail Trail = {{x, y}, End};
         
+        AllTrails.push_back({{x, y}, End});
+
         if (find(Trails.begin(), Trails.end(), Trail) == Trails.end())
             Trails.push_back({{x, y}, End});
 
@@ -49,39 +52,19 @@ auto find_heads(size_t x, size_t y, vector<string> lines, Loc End)
         find_heads(x - 1, y, lines, End);
     }
 
-    if (x > 0 and y > 0 and lines.at(y - 1).at(x - 1) == lines.at(y).at(x) - 1)
-    {
-        find_heads(x - 1, y - 1, lines, End);
-    }
-
     if (y > 0 and lines.at(y - 1).at(x) == lines.at(y).at(x) - 1)
     {
         find_heads(x, y - 1, lines, End);
     }
 
-    if (x > 0 and y < lines.size() - 1 and lines.at(y + 1).at(x - 1) == lines.at(y).at(x) - 1)
-    {
-        find_heads(x - 1, y + 1, lines, End);
-    }
-
-    if (x > 0 and y < lines.size() - 1 and lines.at(y + 1).at(x) == lines.at(y).at(x) - 1)    
+    if (y < lines.size() - 1 and lines.at(y + 1).at(x) == lines.at(y).at(x) - 1)    
     {
         find_heads(x, y + 1, lines, End);
     }
 
-    if (x < lines.at(0).size() - 1 and lines.at(y).at(x + 1) == lines.at(y).at(x) - 1) 
+    if (x < lines.at(y).size() - 1 and lines.at(y).at(x + 1) == lines.at(y).at(x) - 1) 
     {
         find_heads(x + 1, y, lines, End);
-    }
-
-    if (x < lines.at(0).size() - 1 and y > 0 and lines.at(y - 1).at(x + 1) == lines.at(y).at(x) - 1)
-    {
-        find_heads(x + 1, y - 1, lines, End);
-    }
-
-    if (x < lines.at(0).size() - 1 and y < lines.size() - 1 and lines.at(y + 1).at(x + 1) == lines.at(y).at(x) - 1)
-    {
-        find_heads(x + 1, y + 1, lines, End);
     }
 
 }
@@ -120,7 +103,9 @@ int main(int argc, char** argv)
         }
     }
 
-    cout << Trails.size() << '\n';   
+    cout << "Sum : " << Trails.size() << '\n';   
+    cout << "Rating Sum : " << AllTrails.size() << '\n';   
+
 
     return 0;
 }
